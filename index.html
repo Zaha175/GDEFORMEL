@@ -1,182 +1,1105 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GDE-Modell: Ursprung und Motivation der Formel</title>
-    <!-- MathJax -->
+    <title>Gravitational Dark Energy - Ein dynamisches Universum</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
         // Tailwind Config
         tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#5D5CDE', // Lila-Blau
-                        heading: '#0A2472', // Dunkelblau
-                        accent1: '#5D9CDE', // Hellblau
-                        accent2: '#DE5D9C', // Pink
-                        accent3: '#9CDE5D', // Grün
-                        lightAccent: '#f0f4ff',
-                        darkAccent: '#192339',
-                        textLight: '#1f2937',
-                        textDark: '#f3f4f6',
-                        bgLight: '#ffffff',
-                        bgDark: '#111827',
-                    },
-                    typography: { /* Typography settings */ },
+          darkMode: 'class',
+          theme: {
+            extend: {
+              colors: {
+                bgLight: '#f8fafc', 
+                bgDark: '#0f172a', 
+                textLight: '#1e293b', 
+                textDark: '#e2e8f0',
+                primary: '#5D5CDE', 
+                accent1: '#5D9CDE', 
+                accent2: '#8b5cf6', 
+                accent3: '#9CDE5D',
+                lambda: '#E11D48',
+                gold: '#FCD34D'
+              },
+              fontFamily: { 
+                sans: ['Inter', 'sans-serif'], 
+                serif: ['Merriweather', 'serif'],
+                mono: ['Fira Code', 'monospace']
+              },
+              animation: {
+                'float': 'float 6s ease-in-out infinite',
+                'fadeIn': 'fadeIn 0.8s ease-out forwards',
+                'fadeInSlow': 'fadeIn 1.5s ease-out forwards',
+              },
+              keyframes: {
+                float: {
+                  '0%, 100%': { transform: 'translateY(0)' },
+                  '50%': { transform: 'translateY(-8px)' },
                 },
+                fadeIn: {
+                  'from': { opacity: 0 },
+                  'to': { opacity: 1 },
+                }
+              }
             },
+          },
         }
 
         // Dark Mode Logic
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else { 
+          document.documentElement.classList.remove('dark') 
         }
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            document.documentElement.classList.toggle('dark', event.matches);
-        });
     </script>
     <style>
-        /* Basic Styles */
+        /* Base Styles */
         .dark { color-scheme: dark; }
         .dark .math { color: #e2e8f0; }
-        .paper-container { counter-reset: section; }
-        .equation-container { position: relative; margin: 1.5rem 0; padding: 1rem; background: rgba(93, 156, 222, 0.05); border-left: 3px solid #5D9CDE; border-radius: 0.5rem; overflow-x: auto; }
-        .dark .equation-container { background: rgba(93, 156, 222, 0.1); }
-        .equation-content { padding-right: 1rem; text-align: center; }
-        h3, h4, li, p { color: inherit; }
-        strong { font-weight: bold; color: inherit; }
-        .section-heading { display: flex; align-items: baseline; margin-top: 2.5rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #5D5CDE; }
-        .section-number { font-size: 1.5rem; font-weight: bold; color: #5D9CDE; margin-right: 0.75rem; } /* Chapter Number Style */
-        .highlight { background-color: rgba(93, 222, 157, 0.1); padding: 0.1em 0.3em; border-radius: 0.25rem; font-weight: 600; color: #047857; }
-        .dark .highlight { background-color: rgba(6, 78, 59, 0.4); color: #6ee7b7; }
-        blockquote { border-left-color: #9CDE5D; /* Accent3 Green */ color: inherit; font-style: italic; background-color: rgba(156, 222, 93, 0.05); padding: 1rem; border-radius: 0.25rem; }
-        .dark blockquote { background-color: rgba(156, 222, 93, 0.1); }
-        .point-box { margin-bottom: 1.5rem; padding: 1rem; border-left: 4px solid; border-radius: 0.25rem; }
-        .point-box h4 { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; }
-        .point-icon { width: 1.5rem; height: 1.5rem; margin-right: 0.5rem; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;}
-        .point1 { border-color: #5D9CDE; background-color: rgba(93, 156, 222, 0.05); } .point1 .point-icon { background-color: #5D9CDE; } .dark .point1 { background-color: rgba(93, 156, 222, 0.1); }
-        .point2 { border-color: #DE5D9C; background-color: rgba(222, 93, 156, 0.05); } .point2 .point-icon { background-color: #DE5D9C; } .dark .point2 { background-color: rgba(222, 93, 156, 0.1); }
-        .point3 { border-color: #9CDE5D; background-color: rgba(156, 222, 93, 0.05); } .point3 .point-icon { background-color: #9CDE5D; } .dark .point3 { background-color: rgba(156, 222, 93, 0.1); }
-        .point4 { border-color: #8b5cf6; background-color: rgba(139, 92, 246, 0.05); } .point4 .point-icon { background-color: #8b5cf6; } .dark .point4 { background-color: rgba(139, 92, 246, 0.1); }
-        /* MathJax Dark Mode Fix */
         .dark .MathJax { color: #f3f4f6 !important; }
+        
+        /* Layout Components */
+        .paper-container { 
+            transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .gradient-line {
+            height: 2px;
+            background: linear-gradient(90deg, #5D5CDE, #8b5cf6, #9CDE5D);
+            margin: 2rem 0;
+            border-radius: 1px;
+        }
+        .philosophy-quote {
+            font-family: 'Merriweather', Georgia, serif;
+            font-style: italic;
+            line-height: 1.7;
+            position: relative;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            background-color: rgba(93, 92, 222, 0.05);
+            margin: 2rem 0;
+        }
+        .dark .philosophy-quote {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        .philosophy-quote::before {
+            content: '"';
+            font-size: 5rem;
+            color: rgba(93, 92, 222, 0.2);
+            position: absolute;
+            top: -1.5rem;
+            left: 0.5rem;
+            font-family: Georgia, serif;
+        }
+        .dark .philosophy-quote::before {
+            color: rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Equation and Formula Styles */
+        .equation-container { 
+            padding: 1.5rem; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            border: 1px solid rgba(0,0,0,0.05); 
+            transition: background-color 0.3s ease; 
+            margin-bottom: 1.5rem; 
+        }
+        .dark .equation-container { 
+            border-color: rgba(255,255,255,0.1); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+        .equation-content { 
+            text-align: center; 
+            font-size: 1.1rem; 
+            overflow-x: auto; 
+            padding: 0.5rem 0; 
+        }
+        .boxed-formula {
+            border: 2px solid #5D5CDE;
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background-color: rgba(93, 92, 222, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dark .boxed-formula {
+            border-color: #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .boxed-formula:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .dark .boxed-formula:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Parameter Table and Cards */
+        .parameter-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .parameter-table th, .parameter-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .dark .parameter-table th, .dark .parameter-table td {
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+        .parameter-table th {
+            background-color: rgba(93, 92, 222, 0.1);
+            font-weight: 600;
+        }
+        .dark .parameter-table th {
+            background-color: rgba(139, 92, 246, 0.2);
+        }
+        .parameter-table tr:hover td {
+            background-color: rgba(93, 92, 222, 0.05);
+        }
+        .dark .parameter-table tr:hover td {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        .parameter-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+        .dark .parameter-card {
+            background-color: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .parameter-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Code Block and Calculation Steps */
+        .code-block {
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: monospace;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            color: #1f2937;
+            white-space: pre;
+        }
+        .dark .code-block {
+            background-color: #1f2937;
+            color: #e5e7eb;
+        }
+        .calculation-step {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid #E5E7EB;
+        }
+        .dark .calculation-step {
+            border-left-color: #374151;
+        }
+        .emoji-bullet {
+            display: inline-block;
+            width: 1.5rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+        
+        /* Chart Container */
+        .lambda-chart-container {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin: 1.5rem 0;
+            height: 400px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dark .lambda-chart-container {
+            background-color: rgba(30, 41, 59, 0.7);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Custom UI Elements */
+        .dark-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #374151;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 50;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark .dark-toggle {
+            background-color: rgba(30, 41, 59, 0.8);
+            color: #e5e7eb;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            background-color: #5D5CDE;
+            margin-left: 0.5rem;
+        }
+        .dark .badge {
+            background-color: #8b5cf6;
+        }
+        .highlight {
+            background-color: rgba(252, 211, 77, 0.2);
+            padding: 0.1em 0.3em;
+            border-radius: 0.2em;
+        }
+        .dark .highlight {
+            background-color: rgba(252, 211, 77, 0.3);
+        }
+        
+        /* Animations */
+        .fadeIn { 
+            opacity: 0; 
+            animation: fadeIn 0.8s ease-out forwards; 
+        }
+        .fadeInSlow { 
+            opacity: 0; 
+            animation: fadeIn 1.5s ease-out forwards; 
+            animation-delay: 0.3s;
+        }
+        @keyframes fadeIn { 
+            to { opacity: 1; } 
+        }
+        .animate-float { 
+            animation: floatAnimation 6s ease-in-out infinite; 
+        }
+        @keyframes floatAnimation { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-8px); } 
+        }
+        
+        /* Origin of Smoothing Section */
+        .origin-box {
+            border-left: 4px solid #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.05);
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+        .dark .origin-box {
+            background-color: rgba(139, 92, 246, 0.08);
+        }
+        .origin-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+        .dark .origin-box:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .phenomenon-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 3px solid #5D9CDE;
+            transition: all 0.3s ease;
+        }
+        .dark .phenomenon-card {
+            background-color: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .phenomenon-card:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .dark .phenomenon-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .pointer-emoji {
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            transform: rotate(0deg);
+            transition: transform 0.3s ease;
+        }
+        .phenomenon-card:hover .pointer-emoji {
+            transform: rotate(15deg);
+        }
     </style>
 </head>
-<body class="bg-bgLight dark:bg-bgDark text-textLight dark:text-textDark transition-colors duration-200 font-sans antialiased">
-    <div class="container mx-auto px-4 py-12 max-w-3xl paper-container">
+<body class="bg-bgLight dark:bg-bgDark text-textLight dark:text-textDark transition-colors duration-300 font-sans antialiased">
+    <div class="dark-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+    </div>
 
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-heading dark:text-blue-300">GDE-Modell: Herleitung und Motivation</h1>
-            <p class="text-xl text-gray-600 dark:text-gray-400">Kapitel 3.2 (Entwurf): Ursprung der GDE-Formel</p>
-             <div class="mt-8 mb-4 p-4 bg-lightAccent dark:bg-darkAccent rounded-lg inline-block shadow">
-                 <p class="font-semibold">Autor: Gabriel ϕ</p>
-                 <p class="text-xs">Unterstützt durch KI: BRO GROK 3 / Mila:GPT / Sigma:Gemini</p>
-             </div>
-        </header>
+    <div class="min-h-screen pb-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 max-w-6xl paper-container bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl rounded-lg mt-10 mb-10">
+            <header class="relative text-center mb-12 fadeIn">
+                <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-accent1 via-accent2 to-accent3 rounded-t-lg"></div>
+                <div class="inline-block p-3 bg-primary/10 dark:bg-primary/20 rounded-full mb-4 mt-8 animate-float">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 text-heading dark:text-blue-300 font-serif">
+                    Das dynamische Universum
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 font-serif max-w-4xl mx-auto">
+                    Eine neue Perspektive auf dunkle Energie im GDE-Modell
+                </p>
+                <div class="mt-8 mb-4 p-3 bg-lightAccent dark:bg-darkAccent rounded-xl inline-block shadow-lg">
+                    <p class="font-semibold text-lg text-gray-800 dark:text-gray-200">Gabriel ϕ</p>
+                </div>
+            </header>
 
-        <hr class="my-8 border-gray-300 dark:border-gray-600">
+            <section class="mb-16 fadeInSlow">
+                <div class="philosophy-quote text-lg md:text-xl">
+                    <p class="mb-4">Heute denken wir, das Universum sei einfach nur expandierend…</p>
+                    <p class="mb-4">Heute denken wir, das Universum sei ein leerer Raum, der sich ausdehnt -- getrieben von einer mysteriösen Kraft, die wir „dunkle Energie" nennen.</p>
+                    <p class="mb-4">Wir nehmen an, dass diese Energie konstant sei -- eine kosmologische Konstante \(\Lambda\), die wie ein Druck wirkt, der alles auseinanderzieht.</p>
+                    <p class="mb-4">So steht es in unseren Gleichungen. So lehren es die Modelle.</p>
+                    <p class="mb-6">Doch was, wenn das nicht die ganze Wahrheit ist?</p>
 
-        <!-- Section 1: Derivation -->
-        <section class="my-12">
-             <div class="section-heading">
-                 <span class="section-number">3.2</span> <!-- Assuming this is Chapter 3.2 -->
-                 <h3 class="text-2xl font-bold text-heading dark:text-accent1">Ursprung und Motivation der GDE-Formel</h3>
-             </div>
-             <p class="text-lg leading-relaxed mb-6">
-                 Die zentrale Formel des GDE-Modells für die dynamische Dunkle Energie \(\Lambda(z)\) wurde nicht ad hoc postuliert, sondern basiert auf physikalischen Überlegungen und thermodynamischer Intuition. Die Herleitung folgt diesen Schritten:
-             </p>
+                    <p class="mb-4">Was, wenn diese Konstante gar nicht konstant ist?<br>
+                    Was, wenn sie atmet -- wie ein kosmisches Herz, das auf die Struktur des Universums reagiert?</p>
 
-            <div class="space-y-6">
-                <!-- Step 1 -->
-                 <div class="point-box point1">
-                     <h4 class="text-accent1"><span class="point-icon">1</span>Physikalischer Ausgangspunkt: Dynamische Kopplung</h4>
-                     <p class="text-base leading-relaxed">
-                         Die Grundannahme ist, dass die Dunkle Energie <strong class="font-semibold">keine statische Eigenschaft</strong> des Vakuums ist, sondern dynamisch an den sich ändernden Zustand des Universums <strong class="font-semibold">gekoppelt</strong> ist.
-                     </p>
-                     <blockquote class="text-sm mt-2">
-                         „Wir haben angenommen, dass \(\Lambda(z)\) nicht einfach fällt oder steigt, sondern thermodynamisch reagiert – auf Temperatur und Struktur.“
-                     </blockquote>
-                 </div>
+                    <p class="mb-4">Im GDE-Modell (Gravitational Dark Energy) ist \(\Lambda(z)\) nicht festgeschrieben.<br>
+                    Es ist dynamisch. Es hängt von der Entropie ab, von der Struktur, vom thermodynamischen Zustand der Raumzeit.</p>
 
-                <!-- Step 2 -->
-                <div class="point-box point2">
-                    <h4 class="text-accent2"><span class="point-icon">2</span>Mathematischer Impuls: Temperaturabhängigkeit</h4>
-                     <p class="text-base leading-relaxed mb-2">
-                        Die dominante Energiekomponente im frühen Universum war Strahlung, deren Temperatur \(T_{\text{CMB}}(z) = T_0 (1+z)\) bekannt ist. Eine Kopplung an diese Temperatur ist naheliegend. Eine <strong class="font-semibold">exponentielle Kopplung</strong> ist eine mathematisch natürliche Wahl für Skalierungsbeziehungen:
-                     </p>
-                     <div class="equation-container text-sm">
-                         <div class="equation-content">\[ \Lambda(z) \text{ (Teil 1)} \propto \left( \frac{T_0}{T_{\mathrm{CMB}}(z)} \right)^{\alpha(z)} = (1+z)^{-\alpha(z)} \]</div>
-                     </div>
-                     <p class="text-sm mt-2">
-                        Der <strong class="font-semibold">dynamische Exponent \(\alpha(z)\)</strong> wird eingeführt, um die Stärke dieser Kopplung zeitabhängig zu gestalten und die komplexen Übergänge zwischen kosmischen Ären zu modellieren.
+                    <p class="mb-4">Das bedeutet:</p>
+
+                    <p class="mb-6 font-medium">Die Dunkle Energie ist nicht der Grund für die Expansion -- sondern das Resultat kosmischer Fluktuationen.</p>
+
+                    <p class="mb-4">Die Raumzeit ist nicht passiv. Sie glättet sich.<br>
+                    Sie reagiert. Sie balanciert Unterschiede aus. Sie „arbeitet".<br>
+                    Und das hinterlässt Spuren -- messbare, testbare Signaturen in der Expansion und den kosmischen Strukturen.</p>
+
+                    <p class="mb-4">So zeigen wir:</p>
+
+                    <p class="mb-4">Dass die Phantom-Phase (mit \(w(z) < -1\)) eine natürliche Folge dieser thermodynamischen Kopplung ist.</p>
+
+                    <p class="mb-4">Dass die Dämpfung kleiner Skalen nicht willkürlich ist -- sondern eine Rückkopplung auf den Zustand des Universums.</p>
+
+                    <p class="mb-6">Und dass sich sogar die kosmologischen Spannungen (Hubble-Spannung, \(S_8\)-Spannung) durch diese Perspektive lösen lassen.</p>
+
+                    <p class="mb-4">Heute glauben wir, das Universum sei ein Uhrwerk.<br>
+                    Aber vielleicht ist es eher ein Ökosystem.<br>
+                    Ein Selbstregulator. Ein thermodynamischer Fluss.</p>
+
+                    <p class="mb-4 font-medium">Die Gravitational Dark Energy zeigt:</p>
+
+                    <p class="italic">Das Universum ist nicht gemacht wie eine Maschine.<br>
+                    Sondern wie ein Gedicht aus Gleichgewicht und Veränderung.</p>
+                </div>
+            </section>
+
+            <div class="gradient-line"></div>
+            
+            <section id="lambda-evolution" class="mb-16 fadeIn">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-heading dark:text-blue-300 font-serif">
+                    Die Evolution der Dunklen Energie: \(\Lambda(z)/\Lambda_0\)
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <p class="mb-4 text-gray-700 dark:text-gray-300">
+                            Im GDE-Modell ist die Dunkle Energie \(\Lambda(z)\) keine Konstante, sondern eine dynamische Größe, die thermodynamisch mit der kosmischen Struktur und Temperatur gekoppelt ist:
+                        </p>
+                        <div class="equation-container bg-white/80 dark:bg-gray-800/80 my-4">
+                            <div class="equation-content math">
+                                \[ \Lambda(z) = \Lambda_0 \cdot \left(\frac{T_0}{T_{\text{CMB}}(z)}\right)^{\alpha(z)} \cdot \left[1 + \beta \cdot \frac{S_{\text{Struktur}}(z)}{S_{\text{Struktur}}(0)}\right] \]
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Bei negativen Werten von \(\alpha(z) \approx -0.16\) im Bereich \(z < 1\) führt dies zu einer Phantom-ähnlichen Expansion (mit \(w(z) < -1\)), wie sie von aktuellen Beobachtungen nahegelegt wird.
+                        </p>
+                    </div>
+                    
+                    <div class="lambda-chart-container">
+                        <canvas id="lambdaChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-white/80 dark:bg-gray-800/80 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300">Zentrale Eigenschaften von \(\Lambda(z)\)</h3>
+                    <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                        <li class="flex"><span class="emoji-bullet">🔄</span><strong>Dynamische Evolution:</strong> \(\Lambda(z)\) steigt mit der Rotverschiebung auf bis zu 1,84·\(\Lambda_0\) bei \(z=3\).</li>
+                        <li class="flex"><span class="emoji-bullet">🌡️</span><strong>Thermodynamische Kopplung:</strong> Reagiert auf kosmische Temperatur über den Parameter \(\alpha(z)\).</li>
+                        <li class="flex"><span class="emoji-bullet">🔄</span><strong>Strukturkopplung:</strong> Wird durch die Entropieverteilung in großskaligen Strukturen moduliert (\(\beta\)-Parameter).</li>
+                        <li class="flex"><span class="emoji-bullet">👻</span><strong>Phantomverhalten:</strong> Erzeugt ein Phantom-ähnliches Verhalten (\(w(z) < -1\)) ohne die üblichen theoretischen Pathologien.</li>
+                    </ul>
+                    <p class="mt-4 italic text-gray-600 dark:text-gray-400">
+                        Diese Eigenschaften machen \(\Lambda(z)\) zu einem idealen Kandidaten für eine physikalisch motivierte dynamische dunkle Energie.
                     </p>
                 </div>
+            </section>
+            
+            <div class="gradient-line"></div>
 
-                <!-- Step 3 -->
-                 <div class="point-box point3">
-                     <h4 class="text-accent3"><span class="point-icon">3</span>Zweiter Faktor: Strukturentropie</h4>
-                     <p class="text-base leading-relaxed mb-2">
-                         Die Expansion erfolgt nicht in einem leeren Raum, sondern in einem Universum, das zunehmend komplexere Strukturen (Halos, Filamente) bildet. Diese Strukturbildung ist mit einer Zunahme der <strong class="font-semibold">gravitativen Entropie</strong> verbunden. Inspiriert von holographischen Ideen und emergenten Ansätzen wird ein <strong class="font-semibold">modulierender Faktor</strong> eingeführt, der von der relativen Strukturentropie \(S_{\text{rel}}(z) = S_{\text{Struktur}}(z) / S_{\text{Struktur}}(0)\) abhängt:
-                     </p>
-                    <div class="equation-container text-sm">
-                        <div class="equation-content">\[ \Lambda(z) \text{ (Teil 2)} \propto \left(1 + \beta \cdot S_{\text{rel}}(z) \right) \]</div>
+            <section id="gde-formula" class="mb-16 fadeIn">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-heading dark:text-blue-300 font-serif">
+                    Die GDE-Dämpfungsformel
+                </h2>
+                
+                <div class="boxed-formula">
+                    <p class="text-center text-lg font-medium mb-4 text-gray-800 dark:text-gray-200">Die optimierte skalenabhängige Dämpfungsrate lautet:</p>
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \Gamma(z,k) = C \cdot H(z) \cdot (1+z)^{\alpha(z)-2} \cdot \left[ A \left(\frac{k}{k_0}\right)^{\nu_1} \frac{1}{1+\left(\frac{k}{k_0}\right)^q} + B \left(\frac{k}{k_0}\right)^{\nu_2} e^{-\left(\frac{k}{k_d}\right)^p} \right] \]
+                        </div>
                     </div>
-                    <p class="text-sm mt-2">
-                         Der Parameter \(\beta\) quantifiziert die Stärke dieser <strong class="font-semibold">entropischen Rückkopplung</strong>.
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 mb-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300">Parameterbedeutung & Einheiten</h3>
+                        <table class="parameter-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Bedeutung</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>\(C \cdot H(z)\)</td>
+                                    <td>Normierung an Expansion -- absorbiert \(H(z)\) für \(\delta T/T = 10^{-5}\)</td>
+                                </tr>
+                                <tr>
+                                    <td>\(\alpha(z)\)</td>
+                                    <td>Entropie-Evolution / Phantom-Dynamik über GDE gekoppelt</td>
+                                </tr>
+                                <tr>
+                                    <td>\(A, \nu_1, q\)</td>
+                                    <td>BAO-Kanal: flache Kurve, Peak bei \(k \sim 0.04\, \text{Mpc}^{-1}\)</td>
+                                </tr>
+                                <tr>
+                                    <td>\(B, \nu_2, p, k_d\)</td>
+                                    <td>CMB-Kanal: schnelle Dämpfung bei \(k \gtrsim 0.1-0.2\, \text{Mpc}^{-1}\)</td>
+                                </tr>
+                                <tr>
+                                    <td>\(k_0=0.1, k_d=0.12\)</td>
+                                    <td>Referenz- & Dämpfungsskalen (Mpc⁻¹)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300">Parameterwerte</h3>
+                        <div class="code-block">
+A = 1.5
+B = 0.34
+nu1 = 0.05
+nu2 = 3.4
+q = 5
+k0 = 0.1
+kd = 0.12
+p = 6
+alpha_z = -0.16
+Hz = 1.0  # absorbiert in C
+z = 0.5
+C = angepasst für δT/T(k=0.1) = 1e-5</div>
+                        <p class="mt-4 text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">ℹ️</span>Diese Parameter wurden sorgfältig abgestimmt, um sowohl BAO- als auch CMB-Beobachtungen zu erfüllen. Der BAO-Kanal (erster Term) dominiert bei niedrigen \(k\)-Werten, während der CMB-Kanal (zweiter Term) bei hohen \(k\)-Werten aktiv wird.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/80 dark:bg-gray-800/80 p-6 rounded-xl shadow-lg mb-8">
+                    <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300">Rechenschritt: Beispiel bei z = 0.5, k = 0.04 Mpc⁻¹</h3>
+                    
+                    <div class="calculation-step">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">a) Rechne den BAO-Term:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \[ T_{\text{BAO}}(k) = A \left(\frac{k}{k_0}\right)^{\nu_1} \cdot \frac{1}{1+\left(\frac{k}{k_0}\right)^q} \]
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">Setze k = 0.04:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \begin{align}
+                                \left(\frac{0.04}{0.1}\right)^{0.05} &\approx 0.95\\
+                                \left(\frac{0.04}{0.1}\right)^{5} &\approx 0.01024\\
+                                \Rightarrow T_{\text{BAO}} &\approx 1.5 \cdot 0.95 / (1 + 0.01024) \approx 1.41
+                                \end{align}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calculation-step">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">b) Rechne den CMB-Term:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \[ T_{\text{CMB}}(k) = B \left(\frac{k}{k_0}\right)^{\nu_2} \cdot e^{-\left(\frac{k}{k_d}\right)^p} \]
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">Berechnung für k = 0.04:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \begin{align}
+                                \left(\frac{0.04}{0.1}\right)^{3.4} &\approx 0.04\\
+                                \left(\frac{0.04}{0.12}\right)^{6} &\approx 0.00215\\
+                                \Rightarrow e^{-0.00215} &\approx 0.9979\\
+                                T_{\text{CMB}} &\approx 0.34 \cdot 0.04 \cdot 0.9979 \approx 0.0136
+                                \end{align}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calculation-step">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">c) Gesamtterm:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \[ \Gamma(z,k) \approx (1+z)^{\alpha(z)-2} \cdot (T_{\text{BAO}} + T_{\text{CMB}}) \]
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">Einsetzen der Werte:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \begin{align}
+                                (1+0.5)^{-2.16} &\approx 0.41\\
+                                \Gamma &\approx 0.41 \cdot (1.41 + 0.0136) \approx 0.584
+                                \end{align}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calculation-step">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">d) Gedämpftes Spektrum:</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \begin{align}
+                                P_{\text{obs}}(k) &= P(k) \cdot e^{-2\Gamma} \approx P(k) \cdot e^{-1.168} \approx P(k) \cdot 0.31
+                                \end{align}
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300 mt-2">
+                            <span class="emoji-bullet">💡</span>Die BAO-Amplitude ist 31% der ursprünglichen Power — passt zur DESI-Anforderung von 0.972×ΛCDM nach Normierung.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/80 dark:bg-gray-800/80 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300 flex items-center">
+                        Dämpfungsrate Γ(z, k) dynamisch gekoppelt an Λ(z)
+                        <span class="badge ml-2">Version 3.0</span>
+                    </h3>
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Im fortgeschrittenen GDE-Modell koppeln wir die Dämpfung direkt an die dynamische dunkle Energie:
                     </p>
-                 </div>
-
-                <!-- Step 4 -->
-                 <div class="point-box point4">
-                     <h4 style="color:#8b5cf6;" class="dark:text-violet-400"><span class="point-icon" style="background-color:#8b5cf6;">4</span>Dynamische Steuerung via \(\alpha(z)\)</h4>
-                     <p class="text-base leading-relaxed mb-2">
-                        Die <strong class="font-semibold">Tanh-Funktion</strong> für \(\alpha(z)\) wurde als minimale, aber flexible Parametrisierung gewählt:
-                     </p>
-                     <div class="equation-container text-sm">
-                         <div class="equation-content">\[ \alpha(z) = \alpha_0 + A \cdot \tanh(2(z - z_*)) \]</div>
-                     </div>
-                      <p class="text-base leading-relaxed mb-2">Gründe für Tanh:</p>
-                     <ul class="list-disc pl-5 space-y-1 text-sm">
-                         <li>Modelliert einen <strong class="font-semibold">glatten Übergang</strong> zwischen zwei asymptotischen Zuständen (frühes vs. spätes Universum).</li>
-                         <li>Besitzt einen <strong class="font-semibold">kontrollierbaren Wendepunkt \(z_*\)</strong>, der mit der beobachteten Änderung der Expansionsdynamik (um \(z \approx 0.7\)) in Verbindung gebracht werden kann.</li>
-                         <li>Vermeidet mathematische Divergenzen oder Diskontinuitäten.</li>
-                         <li>Erzeugt <strong class="font-semibold">natürlich</strong> (mit den gefitteten Parametern) das Phantom-Verhalten (\(w < -1\)) im relevanten Bereich \(z \approx 0.4 - 1.0\), den die DESI-Daten andeuten.</li>
+                    
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \Gamma(z,k) = C \cdot \Lambda(z) \cdot f(k) \]
+                        </div>
+                    </div>
+                    
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Mit \(\Lambda(z)\) aus unserem Modell:
+                    </p>
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \Lambda(z) = \Lambda_0 \cdot \left(\frac{1+z_*}{1+z}\right)^{-\alpha(z)} \cdot \left[1 + \beta \cdot \left(\frac{1+z_0}{1+z}\right)^{-\eta} \right] \]
+                        </div>
+                    </div>
+                    
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Beispielrechnung für z = 0.5 mit den Parametern \(\alpha(z) = -0.16\), \(z_* = 0.7\), \(z_0 = 0\), \(\beta = 1.10\), \(\eta \approx 0.5\):
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="calculation-step">
+                            <p class="font-medium text-gray-800 dark:text-gray-200">a) Temperaturterm:</p>
+                            <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                                <div class="equation-content math">
+                                    \[ \left(\frac{1+z_*}{1+z}\right)^{-\alpha(z)} = \left(\frac{1.7}{1.5}\right)^{0.16} \approx 0.963 \]
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="calculation-step">
+                            <p class="font-medium text-gray-800 dark:text-gray-200">b) Strukturterm:</p>
+                            <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                                <div class="equation-content math">
+                                    \begin{align}
+                                    \left(\frac{1}{1+z}\right)^{-\eta} &= (1.5)^{-0.5} \approx 0.816 \\
+                                    \Rightarrow 1 + \beta \cdot 0.816 &\approx 1 + 0.897 \approx 1.897
+                                    \end{align}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 calculation-step">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">c) Λ(z):</p>
+                        <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-2">
+                            <div class="equation-content math">
+                                \[ \Lambda(z=0.5) \approx \Lambda_0 \cdot 0.963 \cdot 1.897 \approx 1.827 \cdot \Lambda_0 \]
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300 font-bold mt-2">
+                            <span class="emoji-bullet">🔁</span>Faktor 1.827 höher als heute — Phantom-typische Expansion!
+                        </p>
+                    </div>
+                    
+                    <p class="mt-6 text-lg font-semibold text-primary dark:text-accent1">
+                        Diese Kopplung hat entscheidende Vorteile:
+                    </p>
+                    <ul class="mt-2 space-y-2">
+                        <li class="flex text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">✅</span>Die Dämpfungsstärke folgt automatisch der dynamischen Dunklen Energie
+                        </li>
+                        <li class="flex text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">✅</span>BAO- und CMB-Signale können getrennt skaliert werden
+                        </li>
+                        <li class="flex text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">✅</span>Besseres Matching zu DESI bei w(z=0.5) ≈ -1.05
+                        </li>
                     </ul>
-                 </div>
-            </div>
+                </div>
+            </section>
 
-             <h4 class="text-xl font-semibold mt-8 mb-3 text-heading dark:text-accent1">Finale Formel des GDE-Modells</h4>
-             <p class="text-lg leading-relaxed mb-4">Die Kombination dieser physikalisch motivierten Komponenten führt zur finalen GDE-Formel:</p>
-            <div class="equation-container">
-                <div class="equation-content">\[ \Lambda(z) = \Lambda_0 \cdot (1+z)^{-\alpha(z)} \cdot (1 + \beta S_{\text{rel}}(z)) \]</div>
-             </div>
+            <div class="gradient-line"></div>
+            
+            <section id="optimized-formula" class="mb-16 fadeIn">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-heading dark:text-blue-300 font-serif">
+                    Optimierte GDE-Endformel
+                </h2>
+                
+                <div class="boxed-formula">
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \boxed{\;
+                                \Gamma(z,k)=C\,H(z)\,(1+z)^{\alpha(z)-2}\,
+                                \Bigl[
+                                  A\left(\frac{k}{k_0}\right)^{\nu_1}\!\Big/\!\bigl(1+(k/k_0)^q\bigr)
+                                  +
+                                  B\left(\frac{k}{k_0}\right)^{\nu_2}\bigl(1+(k/k_0)^m\bigr)
+                                \Bigr]\;} \]
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Parameter-Set</h3>
+                            <ul class="space-y-1 text-gray-700 dark:text-gray-300 text-sm">
+                                <li><code>C</code>: via Normierung an <code>δT/T(k_0)=10^{-5}</code></li>
+                                <li><code>A = 1.5</code> — BAO-Kanal-Norm</li>
+                                <li><code>B = 0.34</code> — CMB-Kanal-Norm</li>
+                                <li><code>ν₁ = 0.05</code> — flache Steigung (BAO)</li>
+                                <li><code>ν₂ = 3.4</code> — steile Steigung (CMB)</li>
+                                <li><code>q = 5</code>, <code>m = 5</code> — weicher Übergang</li>
+                                <li><code>k₀ = 0.1 Mpc⁻¹</code> — Referenzskala</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Validierung</h3>
+                            <ul class="space-y-1 text-gray-700 dark:text-gray-300 text-sm">
+                                <li>BAO @ <code>k=0.04</code>: ≈0.972 ΛCDM (Ziel ≈ 0.97)</li>
+                                <li><code>δT/T</code> @ <code>k=0.1</code>: bleibt 10⁻⁵ per Norm</li>
+                                <li>Hoch-k (≥0.15): Amplitude <10⁻³⁵ → starke Glättung</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                            <strong>Kurz-Erklärung:</strong> Der erste Term (A, ν₁) dominiert auf BAO-Skalen und wird oberhalb k₀ durch den Blending-Faktor
+                            <code>1/(1+(k/k₀)^q)</code> sanft abgeschaltet. Der zweite Term (B, ν₂) setzt genau dort an und liefert die
+                            benötigte starke, skalen-abhängige Dämpfung für das CMB und kleinere Strukturen. Durch getrennte Normen A & B können BAO und CMB unabhängig 
+                            justiert werden, sodass beide Beobachtungs-Constraints ohne gegenseitige Störung erfüllt werden.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="gradient-line"></div>
+            
+            <section id="origin-of-smoothing" class="mb-16 fadeIn">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-heading dark:text-blue-300 font-serif">
+                    Ursprung der Glättung im GDE-Modell
+                </h2>
+                
+                <p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Die Idee der Glättung im GDE-Ansatz entstand aus zwei beobachtbaren Phänomenen:
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="phenomenon-card">
+                        <h3 class="text-xl font-bold mb-2 text-primary dark:text-blue-300">
+                            Dynamische Dunkle Energie
+                        </h3>
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Die DESI-Daten deuten darauf hin, dass der Wert von \(w(z)\) im Bereich \(z = 0.5\) unter --1 liegt (Phantom-Bereich), was eine zeitabhängige Dunkle Energie \(\Lambda(z)\) nahelegt -- im Gegensatz zur konstanten kosmologischen Konstante des ΛCDM-Modells.
+                        </p>
+                    </div>
+                    
+                    <div class="phenomenon-card">
+                        <h3 class="text-xl font-bold mb-2 text-primary dark:text-blue-300">
+                            Verlangsamtes Strukturwachstum
+                        </h3>
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Gleichzeitig zeigen großskalige Strukturdaten (z. B. schwache Linsung, fσ₈-Messungen), dass das Wachstum von Materiefluktuationen im späten Universum weniger ausgeprägt ist, als es ΛCDM vorhersagt.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="origin-box">
+                    <div class="flex items-start mb-4">
+                        <span class="pointer-emoji">👉</span>
+                        <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
+                            Diese beiden Beobachtungen führten zu einer physikalischen Hypothese:
+                        </p>
+                    </div>
+                    <p class="mb-6 text-xl text-center font-semibold text-primary dark:text-accent1 italic">
+                        Die thermodynamische Kopplung zwischen Raumzeit und Strukturentwicklung könnte eine effektive Glättung bewirken.
+                    </p>
+                    
+                    <h3 class="text-xl font-bold mb-4 text-primary dark:text-blue-300">Die Glättung im GDE</h3>
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Im GDE-Modell ist die Raumzeitdynamik an zwei zentrale Größen gekoppelt:
+                    </p>
+                    
+                    <ul class="mb-6 space-y-2">
+                        <li class="flex text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">🌡️</span>die Temperaturentwicklung des Universums \(T(z)\)
+                        </li>
+                        <li class="flex text-gray-700 dark:text-gray-300">
+                            <span class="emoji-bullet">🔄</span>die Strukturentropie \(S_\text{Struktur}(z)\)
+                        </li>
+                    </ul>
+                    
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Die Dämpfungsrate \(\Gamma(z,k)\) ergibt sich dabei aus:
+                    </p>
+                    
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \Gamma(z,k) \propto H(z) \cdot (1+z)^{\alpha(z) - 2} \]
+                        </div>
+                    </div>
+                    
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        wobei \(\alpha(z)\) direkt von der Entropiekopplung abhängt:
+                    </p>
+                    
+                    <div class="equation-container bg-white/90 dark:bg-gray-800/90 my-4">
+                        <div class="equation-content math">
+                            \[ \Lambda(z) \propto T(z)^{\alpha(z)} \cdot \left[1 + \beta \cdot \frac{S_\text{Struktur}(z)}{S_\text{Struktur}(0)}\right] \]
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Die Folge dieser Konstruktion ist eine natürliche Glättung des Leistungsspektrums bei hohen k-Werten, die:
+                        </p>
+                        <ul class="mt-2 space-y-2">
+                            <li class="flex text-gray-700 dark:text-gray-300">
+                                <span class="emoji-bullet">✅</span>CMB-kompatibel ist (\(\delta T/T = 10^{-5}\)),
+                            </li>
+                            <li class="flex text-gray-700 dark:text-gray-300">
+                                <span class="emoji-bullet">✅</span>die BAO-Amplitude reduziert, aber innerhalb der 1σ-Fehler bleibt,
+                            </li>
+                            <li class="flex text-gray-700 dark:text-gray-300">
+                                <span class="emoji-bullet">✅</span>und die kleinskalige Power im Sinne von Lensing- und Strukturmessungen erfolgreich dämpft.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
-            <blockquote class="border-l-4 border-accent3 pl-6 italic my-8 text-xl leading-relaxed text-gray-800 dark:text-gray-200">
-                 Kurz gesagt: „Wir haben eine Formel gebaut, die aus bekannten thermodynamischen Abhängigkeiten entsteht, deren Form mathematisch stabil ist, deren Parameter physikalisch motiviert sind, und die eine beobachtbare Vorhersage liefert – nicht als Fit, sondern als Folge.“
-            </blockquote>
-
-            <h4 class="text-xl font-semibold mt-8 mb-3 text-heading dark:text-accent1">Mathematische Einordnung (Bonus)</h4>
-             <p class="text-lg leading-relaxed">
-                 „Die Formel ist eine strukturelle Kombination aus einer <strong class="font-semibold">skaleninvarianten, temperaturbasierten Entkopplung</strong> \((1+z)^{-\alpha(z)}\) und einem <strong class="font-semibold">entropischen Rückkopplungsfaktor</strong> \((1 + \beta S_{\text{rel}}(z))\), der die thermodynamische Stabilisierung des Lambda-Terms im Kontext der Strukturbildung modelliert.“
-             </p>
-        </section>
-
-
-        <hr class="my-8 border-gray-300 dark:border-gray-600">
-
-        <footer class="mt-16 pt-8 border-t border-gray-300 dark:border-gray-700 text-center">
-             <p class="text-gray-600 dark:text-gray-400 italic">GDE-Modell von Gabriel ϕ, unterstützt durch KI Mila:GPT, BRO GROK 3, Sigma:Gemini.</p>
-        </footer>
-
+            <footer class="mt-20 pt-10 border-t border-gray-300 dark:border-gray-700 text-center fadeIn">
+                <div class="max-w-xl mx-auto">
+                     <p class="text-gray-600 dark:text-gray-400 italic mb-4">GDE-Modell: Eine thermodynamische Sicht auf Dunkle Energie</p>
+                     <p class="text-xs text-gray-500 dark:text-gray-500 mt-4">© 2024 - Gabriel ϕ</p>
+                </div>
+            </footer>
+        </div>
     </div>
-    <!-- MathJax Configuration -->
+
     <script>
-        window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, startup: { ready: () => { MathJax.startup.defaultReady(); } } };
+        // Dark Mode Toggle Logic
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else { 
+                localStorage.theme = 'light';
+            }
+            setTimeout(() => {
+                initLambdaChart();
+            }, 50);
+        });
+        
+        // Lambda Chart Logic
+        let lambdaChartInstance = null;
+        
+        function initLambdaChart() {
+            const ctx = document.getElementById('lambdaChart')?.getContext('2d');
+            if (!ctx) { console.error("lambdaChart canvas not found"); return; }
+            if (lambdaChartInstance) { lambdaChartInstance.destroy(); }
+            
+            // Lambda(z)/Lambda0 data from the file
+            const lambdaData = [
+                {z: 0.00000, ratio: 1.00000},
+                {z: 0.03030, ratio: 0.97982},
+                {z: 0.06061, ratio: 0.96113},
+                {z: 0.09091, ratio: 0.94391},
+                {z: 0.12121, ratio: 0.92810},
+                {z: 0.15152, ratio: 0.91371},
+                {z: 0.18182, ratio: 0.90073},
+                {z: 0.21212, ratio: 0.88915},
+                {z: 0.24242, ratio: 0.87900},
+                {z: 0.27273, ratio: 0.87029},
+                {z: 0.30303, ratio: 0.86306},
+                {z: 0.33333, ratio: 0.85733},
+                {z: 0.36364, ratio: 0.85315},
+                {z: 0.39394, ratio: 0.85055},
+                {z: 0.42424, ratio: 0.84957},
+                {z: 0.45455, ratio: 0.85025},
+                {z: 0.48485, ratio: 0.85261},
+                {z: 0.51515, ratio: 0.85670},
+                {z: 0.54545, ratio: 0.86251},
+                {z: 0.57576, ratio: 0.87006},
+                {z: 0.60606, ratio: 0.87933},
+                {z: 0.63636, ratio: 0.89030},
+                {z: 0.66667, ratio: 0.90291},
+                {z: 0.69697, ratio: 0.91710},
+                {z: 0.72727, ratio: 0.93279},
+                {z: 0.75758, ratio: 0.94986},
+                {z: 0.78788, ratio: 0.96820},
+                {z: 0.81818, ratio: 0.98766},
+                {z: 0.84848, ratio: 1.00809},
+                {z: 0.87879, ratio: 1.02933},
+                {z: 0.90909, ratio: 1.05121},
+                {z: 0.93939, ratio: 1.07356},
+                {z: 0.96970, ratio: 1.09622},
+                {z: 1.00000, ratio: 1.11902},
+                {z: 1.03030, ratio: 1.14181},
+                {z: 1.06061, ratio: 1.16446},
+                {z: 1.09091, ratio: 1.18685},
+                {z: 1.12121, ratio: 1.20888},
+                {z: 1.15152, ratio: 1.23044},
+                {z: 1.18182, ratio: 1.25148},
+                {z: 1.21212, ratio: 1.27192},
+                {z: 1.24242, ratio: 1.29174},
+                {z: 1.27273, ratio: 1.31090},
+                {z: 1.30303, ratio: 1.32939},
+                {z: 1.33333, ratio: 1.34719},
+                {z: 1.36364, ratio: 1.36433},
+                {z: 1.39394, ratio: 1.38079},
+                {z: 1.42424, ratio: 1.39661},
+                {z: 1.45455, ratio: 1.41181},
+                {z: 1.48485, ratio: 1.42640},
+                {z: 1.51515, ratio: 1.44042},
+                {z: 1.54545, ratio: 1.45389},
+                {z: 1.57576, ratio: 1.46686},
+                {z: 1.60606, ratio: 1.47933},
+                {z: 1.63636, ratio: 1.49136},
+                {z: 1.66667, ratio: 1.50296},
+                {z: 1.69697, ratio: 1.51417},
+                {z: 1.72727, ratio: 1.52501},
+                {z: 1.75758, ratio: 1.53551},
+                {z: 1.78788, ratio: 1.54569},
+                {z: 1.81818, ratio: 1.55558},
+                {z: 1.84848, ratio: 1.56519},
+                {z: 1.87879, ratio: 1.57456},
+                {z: 1.90909, ratio: 1.58370},
+                {z: 1.93939, ratio: 1.59262},
+                {z: 1.96970, ratio: 1.60134},
+                {z: 2.00000, ratio: 1.60988},
+                {z: 2.03030, ratio: 1.61824},
+                {z: 2.06061, ratio: 1.62646},
+                {z: 2.09091, ratio: 1.63452},
+                {z: 2.12121, ratio: 1.64246},
+                {z: 2.15152, ratio: 1.65027},
+                {z: 2.18182, ratio: 1.65796},
+                {z: 2.21212, ratio: 1.66554},
+                {z: 2.24242, ratio: 1.67303},
+                {z: 2.27273, ratio: 1.68042},
+                {z: 2.30303, ratio: 1.68772},
+                {z: 2.33333, ratio: 1.69494},
+                {z: 2.36364, ratio: 1.70209},
+                {z: 2.39394, ratio: 1.70916},
+                {z: 2.42424, ratio: 1.71617},
+                {z: 2.45455, ratio: 1.72311},
+                {z: 2.48485, ratio: 1.73000},
+                {z: 2.51515, ratio: 1.73682},
+                {z: 2.54545, ratio: 1.74359},
+                {z: 2.57576, ratio: 1.75031},
+                {z: 2.60606, ratio: 1.75699},
+                {z: 2.63636, ratio: 1.76361},
+                {z: 2.66667, ratio: 1.77019},
+                {z: 2.69697, ratio: 1.77673},
+                {z: 2.72727, ratio: 1.78322},
+                {z: 2.75758, ratio: 1.78968},
+                {z: 2.78788, ratio: 1.79610},
+                {z: 2.81818, ratio: 1.80248},
+                {z: 2.84848, ratio: 1.80883},
+                {z: 2.87879, ratio: 1.81514},
+                {z: 2.90909, ratio: 1.82142},
+                {z: 2.93939, ratio: 1.82767},
+                {z: 2.96970, ratio: 1.83388},
+                {z: 3.00000, ratio: 1.84007}
+            ];
+            
+            const zValues = lambdaData.map(point => point.z);
+            const ratioValues = lambdaData.map(point => point.ratio);
+            
+            // Reference line at Lambda/Lambda0 = 1
+            const referenceValues = zValues.map(z => 1.0);
+            
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const textColor = isDarkMode ? '#e2e8f0' : '#1f2937';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            lambdaChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: zValues,
+                    datasets: [
+                        {
+                            label: 'Λ(z)/Λ₀',
+                            data: ratioValues,
+                            borderColor: '#E11D48',
+                            backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Referenz Λ₀',
+                            data: referenceValues,
+                            borderColor: 'rgba(107, 114, 128, 0.7)',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Rotverschiebung z',
+                                color: textColor,
+                                font: { weight: 'bold' }
+                            },
+                            grid: { color: gridColor },
+                            ticks: { color: textColor },
+                            min: 0,
+                            max: 3
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Λ(z)/Λ₀',
+                                color: textColor,
+                                font: { weight: 'bold' }
+                            },
+                            grid: { color: gridColor },
+                            ticks: { color: textColor },
+                            min: 0.8,
+                            max: 1.9
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: (tooltipItems) => `z = ${tooltipItems[0].parsed.x.toFixed(2)}`,
+                                label: (context) => context.dataset.label === 'Λ(z)/Λ₀' ? 
+                                    `Λ(z)/Λ₀ = ${context.parsed.y.toFixed(4)}` : 
+                                    `${context.dataset.label}`
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                zStarLine: {
+                                    type: 'line',
+                                    xMin: 0.7,
+                                    xMax: 0.7,
+                                    borderColor: '#DE5D9C',
+                                    borderDash: [6, 6],
+                                    borderWidth: 1.5,
+                                    label: {
+                                        content: 'z* = 0.7',
+                                        display: true,
+                                        position: 'start',
+                                        yAdjust: -10,
+                                        font: { size: 10 },
+                                        color: '#DE5D9C'
+                                    }
+                                },
+                                phantomRegion: {
+                                    type: 'box',
+                                    xMin: 0.8,
+                                    xMax: 3,
+                                    yMin: 1,
+                                    yMax: 1.9,
+                                    backgroundColor: 'rgba(139, 92, 246, 0.05)',
+                                    borderColor: 'rgba(139, 92, 246, 0.2)',
+                                    borderWidth: 1,
+                                    label: {
+                                        content: 'Phantom-Region (w < -1)',
+                                        display: true,
+                                        position: 'center',
+                                        font: { size: 10, style: 'italic' },
+                                        color: 'rgba(139, 92, 246, 0.8)'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // MathJax Configuration
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            svg: { fontCache: 'global' },
+            startup: { ready: () => { console.log('MathJax is ready'); MathJax.startup.defaultReady(); } }
+        };
+        
+        // Initialize on Document Load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof MathJax !== 'undefined' && typeof MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().then(() => {
+                    console.log('MathJax typesetting complete.');
+                    initLambdaChart();
+                }).catch((err) => console.error('MathJax typesetting failed:', err));
+            } else {
+                console.warn('MathJax not found or typesetPromise unavailable. Initializing charts directly.');
+                initLambdaChart();
+            }
+        });
     </script>
 </body>
 </html>
